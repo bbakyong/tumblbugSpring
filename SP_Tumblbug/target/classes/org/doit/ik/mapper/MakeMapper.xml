@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.doit.ik.mapper.MakeMapper">
+	
+	<select id="getCategoryList" resultType="org.doit.ik.domain.Category">
+		SELECT * 
+		FROM ctg 
+	</select>
+	
+	<select id="getDetailCategoryList" resultType="org.doit.ik.domain.DetailCategory">
+		<![CDATA[ 
+			SELECT dtl_ctg_code, dtl_ctg_name, d.ctg_code, ctg_name 
+			FROM DTL_CTG d 
+				JOIN CTG c ON d.ctg_code = c.ctg_code
+				WHERE d.ctg_code = #{ctg_code} AND d.dtl_ctg_name != '세부 카테고리를 선택해주세요'
+		]]>
+	</select>
+	
+	
+	<select id="selectDefault" resultType="String">
+		SELECT dtl_ctg_code 
+		FROM DTL_CTG 
+		WHERE CTG_CODE = #{ctg_code} AND DTL_CTG_NAME='세부 카테고리를 선택해주세요' 
+	</select>
+
+	<insert id="createProject">
+		INSERT INTO project(PRO_CD, PRO_SM, DTL_CTG_CODE, M_CD ) 
+		VALUES( 'PRO'||SEQ_PROJECT.NEXTVAL ,#{pro_sm} ,#{dtl_ctg_code}, #{m_cd} )
+	</insert>
+	
+	<select id="getNewPro" resultType="org.doit.ik.domain.Project">
+ 			 SELECT *
+			  FROM project
+			  WHERE PRO_CD = (
+			    SELECT 'PRO'||MAX(TO_NUMBER(SUBSTR(pro_cd,4)))
+			    FROM project
+			  )
+	</select>
+
+	<select id="getPaymentList" resultType="org.doit.ik.domain.Payment">
+		SELECT * 
+		FROM PAYMENT_PLAN	
+	</select>
+	
+	<update id="choosePayment">
+		UPDATE project SET pay_cd = #{pay_cd}
+		WHERE pro_cd = #{pro_cd} 
+	</update>
+	
+	<select id="getImage" resultType="org.doit.ik.domain.File">
+		SELECT * 
+		FROM ATT_FILE 
+		WHERE pro_cd = #{pro_cd} AND af_rep = 1 
+	</select>
+	
+	<update id="examineRequest">
+		<![CDATA[
+			UPDATE project SET pro_status = '심사 중'
+			WHERE  pro_cd = #{pro_cd}   
+		]]>
+	</update>
+	
+	<select id="getMyProjects" resultType="org.doit.ik.domain.Project">
+		<![CDATA[
+			SELECT *
+			FROM project
+            WHERE PRO_STATUS = #{searchCondition} AND m_cd=#{m_cd}
+		]]>
+	</select>
+	
+	<delete id="deleteProject">
+		<![CDATA[
+			DELETE FROM project
+			WHERE pro_cd = #{pro_cd} 
+		]]>	
+	</delete>
+
+</mapper>

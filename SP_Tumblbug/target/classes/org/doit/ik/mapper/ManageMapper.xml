@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.doit.ik.mapper.ManageMapper">
+
+	<select id="getProjects" resultType="org.doit.ik.domain.Project">
+		<![CDATA[
+			SELECT *
+			FROM project
+            WHERE PRO_STATUS = #{searchCondition}
+		]]>
+	</select>
+	
+	<select id="getImage" resultType="org.doit.ik.domain.File">
+		<![CDATA[
+			SELECT *
+			FROM att_file
+			WHERE pro_cd = #{pro_cd} AND af_rep = 1
+		]]>
+	</select>
+	
+	<update id="examine">
+		<![CDATA[
+			UPDATE project SET pro_status = #{searchCondition}
+			WHERE pro_cd = #{pro_cd}  
+		]]>
+	</update>
+	
+	
+</mapper>
